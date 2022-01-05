@@ -30,14 +30,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 export default {
     data() {
         return {
-            fillMaterial: new THREE.MeshBasicMaterial({
-                color: "#F3FBFB",
-                side: THREE.DoubleSide,
-                depthWrite: true,
-            }),
-            stokeMaterial: new THREE.LineBasicMaterial({
-                color: "#00A5E6",
-            }),
+           
             cstLongeur: 150,
             cstLargeur: 100,
             cstHauteur: 50,
@@ -59,6 +52,16 @@ export default {
             scene: this.createNewScene,
             camera: this.camera,
             animate: Function,
+            
+            fillMaterial: new THREE.MeshBasicMaterial({
+                color: "#F3FBFB",
+                side: THREE.DoubleSide,
+                depthWrite: true,
+            }),
+            stokeMaterial: new THREE.LineBasicMaterial({
+                color: "#00A5E6",
+                linewidth: this.extrusionInput,
+            }),
         };
     },
     mounted: function () {
@@ -67,7 +70,8 @@ export default {
     watch: {
         extrusionInput: function (val) {
             this.extrusionInput = val;
-            console.log("extrusion ! " + this.extrusionInput);
+            this.cstMaterialThickness = this.extrusionInput;
+            console.log("extrusion ! " + this.cstMaterialThickness);
         },
         cstLongeur: function (val) {
             this.cstLongeur = val;
@@ -79,9 +83,7 @@ export default {
         cstHauteur: function (val) {
             this.cstHauteur = val;
         },
-        cstMaterialThickness: function (val) {
-            this.cstMaterialThickness = val;
-        },
+     
         cstTab: function (val) {
             this.cstTab = val;
         },
@@ -1919,16 +1921,71 @@ export default {
             });
         },
 
-        btnSVGExportClick() {
-                var rendererSVG = new SVGRenderer();
+
+     btnSVGExportClick() {
+                console.log('clicked');
+                this.ExportToSVG();
+                },
+
+        ExportToSVG() {
+                var XMLS = new XMLSerializer();
+
+                var svgData = 
+                '<svg xmlns="http://www.w3.org/2000/svg">'+
+                '<svg >  <g transform="translate(20,2.5)">'+
+                this.back+
+                '</g> </svg>'+
+
+                '<svg >  <g transform="translate(20,70.5)">'+
+                this.front+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(200,2.5)">'+
+                this.right+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(200,100.5)">'+
+                this.left+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(300,2.5) ">'+
+                this.main+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(300,120.5)">'+
+                this.top+
+                '</g></svg>'+
+               
+                '</svg>';
+                var preface = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
+                var svgBlob = new Blob([preface, svgData], {
+                     type: "image/svg+xml;charset=utf-8"
+                });
+                var svgUrl = URL.createObjectURL(svgBlob);
+                var downloadLink = document.createElement("a");
+                
+                downloadLink.href = svgUrl;
+                downloadLink.download = 'your_svg';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                },
+
+
+       /* btnSVGExportClick() {
+               var rendererSVG = new SVGRenderer();
                 rendererSVG.setSize(window.innerWidth, window.innerHeight);
-                rendererSVG.render(this.scene, this.camera);    
+                rendererSVG.render(this.scene, this.camera);
                 this.ExportToSVG(rendererSVG, "test.svg");
                 },
 
         ExportToSVG(rendererSVG, filename) {
                 var XMLS = new XMLSerializer();
-                var svgfile = XMLS.serializeToString(rendererSVG.domElement);
+                var svgfile = XMLS.seriali;
                 var svgData = svgfile;
                 var preface = '<?xml version="1.0" standalone="no"?>\r\n';
                 var svgBlob = new Blob([preface, svgData], {
@@ -1942,7 +1999,7 @@ export default {
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
-                },
+                },*/
                             
 
 
