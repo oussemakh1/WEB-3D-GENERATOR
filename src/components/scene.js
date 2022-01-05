@@ -22,9 +22,9 @@ const setupScene = (container) => {
   
     renderer.setSize(window.innerWidth, window.innerHeight);
     scene.add(ambientLight, pointLight);
-    camera.position.z = 50;
-    camera.position.x = 50;
-    camera.position.y = 50;
+    camera.position.z = 0;
+    camera.position.x = 0;
+    camera.position.y = 300;
     controls.enablePan = false;
     container.append(renderer.domElement);
     window.addEventListener("resize", () => {
