@@ -1,9 +1,8 @@
 <template>
     <form @submit.prevent="this.createScene()">
         <input
-            type="input"
-            min="1"
-            max="5"
+            type="number"
+      
             id="input"
             v-model="extrusionInput"
         />
@@ -34,7 +33,7 @@ export default {
             cstLongeur: 150,
             cstLargeur: 100,
             cstHauteur: 50,
-            cstMaterialThickness: 2,
+            cstMaterialThickness: 5,
             cstTab: 10,
             i: 0,
             makerjs: require("makerjs"),
@@ -70,7 +69,6 @@ export default {
     watch: {
         extrusionInput: function (val) {
             this.extrusionInput = val;
-            this.cstMaterialThickness = this.extrusionInput;
             console.log("extrusion ! " + this.cstMaterialThickness);
         },
         cstLongeur: function (val) {
@@ -513,7 +511,164 @@ export default {
             };
         },
 
-        frontFace(longeur, largeur, hauteur, tab, thickness) {
+     
+
+       setupScene (container) {
+                const scene = new THREE.Scene();
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                const camera = new THREE.PerspectiveCamera(
+                50,
+                window.innerWidth / window.innerHeight,
+                0.01,
+                1e5
+                );
+                const ambientLight = new THREE.AmbientLight("#888888");
+                const pointLight = new THREE.PointLight("#ffffff", 2, 800);
+                const controls = new OrbitControls(camera, renderer.domElement);
+                const animate = () => {
+                renderer.render(scene, camera);
+                controls.update();
+                requestAnimationFrame(animate.bind(this));
+                
+                }
+            
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                scene.add(ambientLight, pointLight);
+                camera.position.z = 0;
+                camera.position.x = 0;
+                camera.position.y = 300;
+                controls.enablePan = false;
+                container.append(renderer.domElement);
+                window.addEventListener("resize", () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                              
+
+                });
+                animate();
+                this.animate = animate();
+                  this.camera = camera;
+                return scene;
+            },
+       
+        createScene() {
+            const scene = this.createNewScene;
+            this.scene = scene;
+
+            this.extrusionInputDOM = document.querySelector("#input");
+            this.main_svg = this.main;
+            this.top_svg = this.top;
+            this.left_svg = this.left;
+            this.right_svg = this.right;
+            this.front_svg = this.front;
+            this.back_svg = this.back;
+
+           var { objectTop, updateTop } = this.renderSVGTop(
+                this.extrusionInput,
+                this.top_svg,
+                scene
+            );
+
+           var { objectLeft, updateLeft } = this.renderSVGLeft(
+                this.extrusionInput,
+                this.left_svg,
+                scene
+            );
+
+            var { objectRight, updateRight } = this.renderSVGRight(
+                this.extrusionInput,
+                this.right_svg,
+                scene
+            );
+
+            var { objectMain, updateMain } = this.renderSVGMain(
+                this.extrusionInput,
+                this.main_svg,
+                scene
+            );
+
+            var { objectFront, updateFront } = this.renderSVGFront(
+                this.extrusionInput,
+                this.front_svg,
+                scene
+            );
+
+            var { objectBack, updateBack } = this.renderSVGBack(
+                this.extrusionInput,
+                this.back_svg,
+                scene
+            );
+
+                        
+
+
+            const helper = new THREE.GridHelper(1000, 10);
+            helper.rotation.x = Math.PI / 2;
+            scene.add(helper);
+
+       
+        },
+
+
+     btnSVGExportClick() {
+                console.log('clicked');
+                this.ExportToSVG();
+                },
+
+        ExportToSVG() {
+                var XMLS = new XMLSerializer();
+
+                var svgData = 
+                '<svg xmlns="http://www.w3.org/2000/svg">'+
+                '<svg >  <g transform="translate(20,2.5)">'+
+                this.back+
+                '</g> </svg>'+
+
+                '<svg >  <g transform="translate(20,70.5)">'+
+                this.front+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(200,2.5)">'+
+                this.right+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(200,100.5)">'+
+                this.left+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(300,2.5) ">'+
+                this.main+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(300,120.5)">'+
+                this.top+
+                '</g></svg>'+
+               
+                '</svg>';
+                var preface = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
+                var svgBlob = new Blob([preface, svgData], {
+                     type: "image/svg+xml;charset=utf-8"
+                });
+                var svgUrl = URL.createObjectURL(svgBlob);
+                var downloadLink = document.createElement("a");
+                
+                downloadLink.href = svgUrl;
+                downloadLink.download = 'your_svg';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                },
+
+
+
+
+    
+    frontFace(longeur, largeur, hauteur, tab, thickness) {
             // define nbrTabTopLine, nbrFingerTopLine, and fingerLengthTopLine for top Line
             var iteration = 3;
             var l = longeur;
@@ -970,7 +1125,7 @@ export default {
             // define nbrTabTopLine, nbrFingerTopLine, and fingerLengthTopLine for top Line
             var iteration = 3;
             var l = longeur;
-            while (l - 2 * tab > 2 * tab) {
+            while (l - 2 * tab > 2 * tab)  {
                 iteration += 2;
                 l -= 2 * tab;
             }
@@ -1813,201 +1968,14 @@ export default {
                 }
             }
             return mainModel;
-        },
-
-       setupScene (container) {
-                const scene = new THREE.Scene();
-                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                const camera = new THREE.PerspectiveCamera(
-                50,
-                window.innerWidth / window.innerHeight,
-                0.01,
-                1e5
-                );
-                const ambientLight = new THREE.AmbientLight("#888888");
-                const pointLight = new THREE.PointLight("#ffffff", 2, 800);
-                const controls = new OrbitControls(camera, renderer.domElement);
-                const animate = () => {
-                renderer.render(scene, camera);
-                controls.update();
-                requestAnimationFrame(animate.bind(this));
-                
-                }
-            
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                scene.add(ambientLight, pointLight);
-                camera.position.z = 0;
-                camera.position.x = 0;
-                camera.position.y = 300;
-                controls.enablePan = false;
-                container.append(renderer.domElement);
-                window.addEventListener("resize", () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                              
-
-                });
-                animate();
-                this.animate = animate();
-                  this.camera = camera;
-                return scene;
-            },
-       
-        createScene() {
-            const scene = this.createNewScene;
-            this.scene = scene;
-
-            this.extrusionInputDOM = document.querySelector("#input");
-            this.main_svg = this.main;
-            this.top_svg = this.top;
-            this.left_svg = this.left;
-            this.right_svg = this.right;
-            this.front_svg = this.front;
-            this.back_svg = this.back;
-
-           const { objectTop, updateTop } = this.renderSVGTop(
-                this.extrusionInput,
-                this.top_svg,
-                scene
-            );
-
-           const { objectLeft, updateLeft } = this.renderSVGLeft(
-                this.extrusionInput,
-                this.left_svg,
-                scene
-            );
-
-            const { objectRight, updateRight } = this.renderSVGRight(
-                this.extrusionInput,
-                this.right_svg,
-                scene
-            );
-
-            const { objectMain, updateMain } = this.renderSVGMain(
-                this.extrusionInput,
-                this.main_svg,
-                scene
-            );
-
-            const { objectFront, updateFront } = this.renderSVGFront(
-                this.extrusionInput,
-                this.front_svg,
-                scene
-            );
-
-            const { objectBack, updateBack } = this.renderSVGBack(
-                this.extrusionInput,
-                this.back_svg,
-                scene
-            );
-
-                        
-
-
-            const helper = new THREE.GridHelper(1000, 10);
-            helper.rotation.x = Math.PI / 2;
-            scene.add(helper);
-
-            this.extrusionInputDOM.addEventListener("input", () => {
-                updateMain(Number(this.extrusionInput));
-                updateLeft(Number(this.extrusionInput));
-                updateRight(Number(this.extrusionInput));
-                updateFront(Number(this.extrusionInput));
-                updateBack(Number(this.extrusionInput));
-                  updateTop(Number(this.extrusionInput));
-                
-
-            });
-        },
-
-
-     btnSVGExportClick() {
-                console.log('clicked');
-                this.ExportToSVG();
-                },
-
-        ExportToSVG() {
-                var XMLS = new XMLSerializer();
-
-                var svgData = 
-                '<svg xmlns="http://www.w3.org/2000/svg">'+
-                '<svg >  <g transform="translate(20,2.5)">'+
-                this.back+
-                '</g> </svg>'+
-
-                '<svg >  <g transform="translate(20,70.5)">'+
-                this.front+
-                '</g></svg>'+
-
-
-                '<svg >  <g transform="translate(200,2.5)">'+
-                this.right+
-                '</g></svg>'+
-
-
-                '<svg >  <g transform="translate(200,100.5)">'+
-                this.left+
-                '</g></svg>'+
-
-
-                '<svg >  <g transform="translate(300,2.5) ">'+
-                this.main+
-                '</g></svg>'+
-
-
-                '<svg >  <g transform="translate(300,120.5)">'+
-                this.top+
-                '</g></svg>'+
-               
-                '</svg>';
-                var preface = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
-                var svgBlob = new Blob([preface, svgData], {
-                     type: "image/svg+xml;charset=utf-8"
-                });
-                var svgUrl = URL.createObjectURL(svgBlob);
-                var downloadLink = document.createElement("a");
-                
-                downloadLink.href = svgUrl;
-                downloadLink.download = 'your_svg';
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                },
-
-
-       /* btnSVGExportClick() {
-               var rendererSVG = new SVGRenderer();
-                rendererSVG.setSize(window.innerWidth, window.innerHeight);
-                rendererSVG.render(this.scene, this.camera);
-                this.ExportToSVG(rendererSVG, "test.svg");
-                },
-
-        ExportToSVG(rendererSVG, filename) {
-                var XMLS = new XMLSerializer();
-                var svgfile = XMLS.seriali;
-                var svgData = svgfile;
-                var preface = '<?xml version="1.0" standalone="no"?>\r\n';
-                var svgBlob = new Blob([preface, svgData], {
-                    type: "image/svg+xml;charset=utf-8"
-                });
-                var svgUrl = URL.createObjectURL(svgBlob);
-                var downloadLink = document.createElement("a");
-                
-                downloadLink.href = svgUrl;
-                downloadLink.download = filename;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                },*/
-                            
-
-
-
+        },  
+   
         
     },
 
     computed: {
+   
+   
         front() {
             return this.makerjs.exporter.toSVG(
                 this.frontFace(
@@ -2015,7 +1983,7 @@ export default {
                     this.cstLargeur,
                     this.cstHauteur,
                     this.cstTab,
-                    this.cstMaterialThickness
+                    this.extrusionInput
                 )
             );
         },
@@ -2027,7 +1995,7 @@ export default {
                     this.cstLargeur,
                     this.cstHauteur,
                     this.cstTab,
-                    this.cstMaterialThickness
+                    this.extrusionInput
                 )
             );
         },
@@ -2039,7 +2007,7 @@ export default {
                     this.cstLargeur,
                     this.cstHauteur,
                     this.cstTab,
-                    this.cstMaterialThickness
+                    this.extrusionInput
                 )
             );
         },
@@ -2051,7 +2019,7 @@ export default {
                     this.cstLargeur,
                     this.cstHauteur,
                     this.cstTab,
-                    this.cstMaterialThickness
+                    this.extrusionInput
                 )
             );
         },
@@ -2063,7 +2031,7 @@ export default {
                     this.cstLargeur,
                     this.cstHauteur,
                     this.cstTab,
-                    this.cstMaterialThickness
+                    this.extrusionInput
                 )
             );
         },
@@ -2075,7 +2043,7 @@ export default {
                     this.cstLargeur,
                     this.cstHauteur,
                     this.cstTab,
-                    this.cstMaterialThickness
+                    this.extrusionInput
                 )
             );
         },
