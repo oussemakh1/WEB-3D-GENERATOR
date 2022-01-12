@@ -1,7 +1,12 @@
-# Vue 3 + Vite
+# CGI BOX MODEL GENERATOR
+###### This Generator script objective is to create a customizable 3d Model that can be downloaded in svg form
+## Tools:
+<b>VueJs
+ ###### Install NodeJs: https://nodejs.org/en/download/
+  ###### Install VueJs: ```npm install vue ```
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+ <b> ViteJs
+   ###### Install ViteJs: ``` npm init vite@latest project_name --template vue ```
+ 
+ <b> ThreeJs <br>
+   ###### Install ThreeJs: ``` npm install --save three ```
