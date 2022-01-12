@@ -132,3 +132,59 @@
         },
   
    ```
+
+  
+  
+  
+  
+  
+  ###### Export the new Threejs generated model with each single face in 2d format in one SVG FILE using the makerjs SVG generator methods for each single face
+   ```javascript
+  ExportToSVG() {
+                var svgData = 
+                '<svg xmlns="http://www.w3.org/2000/svg">'+
+                '<svg >  <g transform="translate(20,2.5)">'+
+                this.back+
+                '</g> </svg>'+
+
+                '<svg >  <g transform="translate(20,70.5)">'+
+                this.front+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(200,2.5)">'+
+                this.right+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(200,100.5)">'+
+                this.left+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(300,2.5) ">'+
+                this.main+
+                '</g></svg>'+
+
+
+                '<svg >  <g transform="translate(300,120.5)">'+
+                this.top+
+                '</g></svg>'+
+               
+                '</svg>';
+                var preface = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
+                var svgBlob = new Blob([preface, svgData], {
+                     type: "image/svg+xml;charset=utf-8"
+                });
+                var svgUrl = URL.createObjectURL(svgBlob);
+                var downloadLink = document.createElement("a");
+                
+                downloadLink.href = svgUrl;
+                downloadLink.download = 'your_svg';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                },
+
+
+```
