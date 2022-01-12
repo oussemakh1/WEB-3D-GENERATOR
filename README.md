@@ -138,7 +138,7 @@
   
   
   
-  ###### Export the new Threejs generated model with each single face in 2d format in one SVG FILE using the makerjs SVG generator methods for each single face
+  ###### Export the new Threejs generated model with each single face in 2d format in one SVG FILE using the makerjs SVG generator methods for each single face and return a downloadable SVG File
    ```javascript
   ExportToSVG() {
                 var svgData = 
