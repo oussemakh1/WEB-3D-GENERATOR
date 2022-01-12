@@ -1,6 +1,6 @@
 # CGI BOX MODEL GENERATOR
 ###### This tool objective is to help users to be able to create their own custom-made models, being able to see the generated model in 3d format also download the generated model in one SVG FILE that contain all the faces of the model in 2d format  
-## Run Project: ``` npm install ``
+## Run Project: ``` npm install ```
 ## Tools:
 <b>VueJs
  ###### Install NodeJs: https://nodejs.org/en/download/
